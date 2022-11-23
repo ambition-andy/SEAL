@@ -80,6 +80,16 @@ namespace seal
             destination = generate_pk_with_veca(false);
         }
 
+        inline std::vector<std::uint64_t> get_veca()
+        {
+            return public_key_.get_veca();
+        }
+
+        inline std::vector<std::uint64_t> get_vecb()
+        {
+            return public_key_.get_vecb();
+        }
+
         /**
         Generates and returns a public key as a serializable object. Every time
         this function is called, a new public key will be generated.
@@ -333,16 +343,6 @@ namespace seal
         PublicKey generate_veca(bool save_seed);
 
         PublicKey generate_pk_with_veca(bool save_seed);
-
-        inline std::vector<std::uint64_t> get_veca()
-        {
-            return public_key_.get_veca();
-        }
-
-        inline std::vector<std::uint64_t> get_vecb()
-        {
-            return public_key_.get_vecb();
-        }
 
         /**
         Generates new key switching keys for an array of new keys.
