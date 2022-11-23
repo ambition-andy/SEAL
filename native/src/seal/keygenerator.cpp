@@ -119,6 +119,59 @@ namespace seal
         return public_key;
     }
 
+    PublicKey KeyGenerator::generate_veca(bool save_seed)
+    {
+        if (!sk_generated_)
+        {
+            throw logic_error("cannot generate public key for unspecified secret key");
+        }
+
+        // Extract encryption parameters.
+        auto &context_data = *context_.key_context_data();
+        auto &parms = context_data.parms();
+        auto &coeff_modulus = parms.coeff_modulus();
+        size_t coeff_count = parms.poly_modulus_degree();
+        size_t coeff_modulus_size = coeff_modulus.size();
+
+        // Size check
+        if (!product_fits_in(coeff_count, coeff_modulus_size))
+        {
+            throw logic_error("invalid parameters");
+        }
+
+        //PublicKey public_key;
+        sample_veca(secret_key_, context_, context_data.parms_id(), true, save_seed, public_key_.data());
+        return public_key_;
+    }
+
+    PublicKey KeyGenerator::generate_pk_with_veca(bool save_seed)
+    {
+        if (!sk_generated_)
+        {
+            throw logic_error("cannot generate public key for unspecified secret key");
+        }
+
+        // Extract encryption parameters.
+        auto &context_data = *context_.key_context_data();
+        auto &parms = context_data.parms();
+        auto &coeff_modulus = parms.coeff_modulus();
+        size_t coeff_count = parms.poly_modulus_degree();
+        size_t coeff_modulus_size = coeff_modulus.size();
+
+        // Size check
+        if (!product_fits_in(coeff_count, coeff_modulus_size))
+        {
+            throw logic_error("invalid parameters");
+        }
+
+        encrypt_zero_symmetric_with_veca(secret_key_, context_, context_data.parms_id(), true, save_seed, public_key_.data());
+
+        // Set the parms_id for public key
+        public_key_.parms_id() = context_data.parms_id();
+
+        return public_key_;
+    }
+
     RelinKeys KeyGenerator::create_relin_keys(size_t count, bool save_seed)
     {
         // Check to see if secret key and public key have been generated

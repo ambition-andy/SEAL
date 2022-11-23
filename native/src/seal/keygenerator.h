@@ -70,6 +70,16 @@ namespace seal
             destination = generate_pk(false);
         }
 
+        inline void create_public_key_veca(PublicKey &destination)
+        {
+            destination = generate_veca(false);
+        }
+
+        inline void create_public_key_vecb(PublicKey &destination)
+        {
+            destination = generate_pk_with_veca(false);
+        }
+
         /**
         Generates and returns a public key as a serializable object. Every time
         this function is called, a new public key will be generated.
@@ -320,6 +330,20 @@ namespace seal
         */
         PublicKey generate_pk(bool save_seed) const;
 
+        PublicKey generate_veca(bool save_seed);
+
+        PublicKey generate_pk_with_veca(bool save_seed);
+
+        inline std::vector<std::uint64_t> get_veca()
+        {
+            return public_key_.get_veca();
+        }
+
+        inline std::vector<std::uint64_t> get_vecb()
+        {
+            return public_key_.get_vecb();
+        }
+
         /**
         Generates new key switching keys for an array of new keys.
         */
@@ -368,6 +392,10 @@ namespace seal
         SEALContext context_;
 
         SecretKey secret_key_;
+
+        PublicKey public_key_;
+
+        PublicKey public_key_vecb_;
 
         std::size_t secret_key_array_size_ = 0;
 

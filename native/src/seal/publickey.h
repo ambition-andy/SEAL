@@ -7,6 +7,7 @@
 #include "seal/context.h"
 #include "seal/valcheck.h"
 #include <iostream>
+#include <vector>
 
 namespace seal
 {
@@ -251,6 +252,32 @@ namespace seal
         Enables access to private members of seal::PublicKey for SEAL_C.
         */
         struct PublicKeyPrivateHelper;
+
+        SEAL_NODISCARD inline std::vector<std::uint64_t> get_veca()
+        {
+            std::vector<std::uint64_t> vec;
+            auto len = pk_.get_veclen();
+            uint64_t *c1 = pk_.data(1);
+            for (std::size_t i = 0; i < len; ++i)
+            {
+                vec.push_back(c1[i]);
+            }
+
+            return vec;
+        }
+
+        SEAL_NODISCARD inline std::vector<std::uint64_t> get_vecb()
+        {
+            std::vector<std::uint64_t> vec;
+            auto len = pk_.get_veclen();
+            uint64_t *c0 = pk_.data();
+            for (std::size_t i = 0; i < len; ++i)
+            {
+                vec.push_back(c0[i]);
+            }
+
+            return vec;
+        }
 
     private:
         /**

@@ -372,6 +372,12 @@ namespace seal
             return data_.cbegin() + util::safe_cast<std::size_t>(util::mul_safe(poly_index, poly_uint64_count));
         }
 
+        SEAL_NODISCARD inline auto get_veclen()
+        {
+            auto poly_uint64_count = util::mul_safe(poly_modulus_degree_, coeff_modulus_size_);
+            return poly_uint64_count;
+        }
+
         /**
         Returns a reference to a polynomial coefficient at a particular
         index in the ciphertext data. If the polynomial modulus has degree N,
