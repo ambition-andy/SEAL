@@ -539,7 +539,7 @@ namespace seal
 
         void encrypt_zero_symmetric_with_veca(
             const SecretKey &secret_key, const SEALContext &context, parms_id_type parms_id, bool is_ntt_form,
-            bool save_seed, Ciphertext &destination)
+            bool save_seed, Ciphertext &veca, Ciphertext &destination)
         {
 #ifdef SEAL_DEBUG
             if (!is_valid_for(secret_key, context))
@@ -594,7 +594,7 @@ namespace seal
             // Generate ciphertext: (c[0], c[1]) = ([-(as+ e)]_q, a) in BFV/CKKS
             // Generate ciphertext: (c[0], c[1]) = ([-(as+pe)]_q, a) in BGV
             uint64_t *c0 = destination.data();
-            uint64_t *c1 = destination.data(1);
+            uint64_t *c1 = veca.data(1);
 
             //// Sample a uniformly at random
             //if (is_ntt_form || !save_seed)

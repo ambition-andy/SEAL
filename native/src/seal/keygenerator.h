@@ -70,24 +70,23 @@ namespace seal
             destination = generate_pk(false);
         }
 
-        inline void create_public_key_veca(PublicKey &destination)
+        PublicKey generate_veca(bool save_seed);
+
+        PublicKey generate_pk_with_veca(bool save_seed);
+
+        inline void set_veca(PublicKey &public_key)
         {
-            destination = generate_veca(false);
+            public_key_veca_ = public_key;
         }
 
-        inline void create_public_key_vecb(PublicKey &destination)
+        inline PublicKey get_veca()
         {
-            destination = generate_pk_with_veca(false);
+            return public_key_veca_;
         }
 
-        inline std::vector<std::uint64_t> get_veca()
+        inline PublicKey get_vecb()
         {
-            return public_key_.get_veca();
-        }
-
-        inline std::vector<std::uint64_t> get_vecb()
-        {
-            return public_key_.get_vecb();
+            return public_key_vecb_;
         }
 
         /**
@@ -340,10 +339,6 @@ namespace seal
         */
         PublicKey generate_pk(bool save_seed) const;
 
-        PublicKey generate_veca(bool save_seed);
-
-        PublicKey generate_pk_with_veca(bool save_seed);
-
         /**
         Generates new key switching keys for an array of new keys.
         */
@@ -393,7 +388,7 @@ namespace seal
 
         SecretKey secret_key_;
 
-        PublicKey public_key_;
+        PublicKey public_key_veca_;
 
         PublicKey public_key_vecb_;
 

@@ -117,6 +117,6 @@ namespace seal
 
         void encrypt_zero_symmetric_with_veca(
             const SecretKey &secret_key, const SEALContext &context, parms_id_type parms_id, bool is_ntt_form,
-            bool save_seed, Ciphertext &destination);
+            bool save_seed, Ciphertext &veca, Ciphertext &destination);
     } // namespace util
 } // namespace seal

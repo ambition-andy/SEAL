@@ -140,8 +140,8 @@ namespace seal
         }
 
         //PublicKey public_key;
-        sample_veca(secret_key_, context_, context_data.parms_id(), true, save_seed, public_key_.data());
-        return public_key_;
+        sample_veca(secret_key_, context_, context_data.parms_id(), true, save_seed, public_key_veca_.data());
+        return public_key_veca_;
     }
 
     PublicKey KeyGenerator::generate_pk_with_veca(bool save_seed)
@@ -164,12 +164,14 @@ namespace seal
             throw logic_error("invalid parameters");
         }
 
-        encrypt_zero_symmetric_with_veca(secret_key_, context_, context_data.parms_id(), true, save_seed, public_key_.data());
+        encrypt_zero_symmetric_with_veca(
+            secret_key_, context_, context_data.parms_id(), true, save_seed, public_key_veca_.data(),
+            public_key_vecb_.data());
 
         // Set the parms_id for public key
-        public_key_.parms_id() = context_data.parms_id();
+        public_key_vecb_.parms_id() = context_data.parms_id();
 
-        return public_key_;
+        return public_key_vecb_;
     }
 
     RelinKeys KeyGenerator::create_relin_keys(size_t count, bool save_seed)

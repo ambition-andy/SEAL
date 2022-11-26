@@ -164,13 +164,6 @@ void example_bfv_basics()
     PublicKey public_key;
     keygen.create_public_key(public_key);
 
-    PublicKey veca;
-    keygen.create_public_key_veca(veca);
-    PublicKey k1;
-    keygen.create_public_key_vecb(k1);
-    PublicKey k2;
-    keygen.create_public_key_vecb(k2);
-
     /*
     To be able to encrypt we need to construct an instance of Encryptor. Note
     that the Encryptor only requires the public key, as expected. It is also
