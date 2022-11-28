@@ -279,6 +279,11 @@ namespace seal
             return vec;
         }
 
+        SEAL_NODISCARD inline void set_cipher(Ciphertext pk)
+        {
+            pk_ = pk;
+        }
+
     private:
         /**
         Creates an empty public key. This is needed for loading KSwitchKeys with
