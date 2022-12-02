@@ -444,6 +444,20 @@ namespace seal
             return data_.cbegin() + coeff_index;
         }
 
+        SEAL_NODISCARD inline void add(Plaintext& plaintext)
+        {
+            auto coeff_count_plaintext = plaintext.coeff_count();
+            if (coeff_count_ != coeff_count_plaintext)
+            {
+                return;
+            }
+            auto iter = data_.begin();
+            for (int i = 0; i < coeff_count_; ++i)
+            {
+                *(iter + i) += *(plaintext.data(i));
+            }
+        }
+
         /**
         Returns a const reference to a given coefficient of the plaintext polynomial.
 
