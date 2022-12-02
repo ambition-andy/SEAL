@@ -114,16 +114,16 @@ void example_ckks_basics()
         encoder.encode(0, scale, x_plain2);
         encoder.encode(0, scale, x_plain3);
 
-        Ciphertext x_a, x_1, x_2, x_3;
+        Ciphertext x_a, x_1, x_2, x_3; // 用来存放veca、vecb1、vecb2、vecb3
         encryptor.encrypt(x_plaina, x_a);
         encryptor.encrypt(x_plain1, x_1);
         encryptor.encrypt(x_plain2, x_2);
         encryptor.encrypt(x_plain3, x_3);
-
+        // user1 生成veca，直接将x_a中的c0和c1替换为veca中的c0和c1
         PublicKey veca = keygen.generate_veca(false);
         x_a.set_c0(veca.get_c0());
         x_a.set_c1(veca.get_c1());
-
+        // user1 生成vecb1，直接将x_1中的c0和c1替换为veca中的c0和c1
         PublicKey vecb1 = keygen.generate_pk_with_veca(false);
         x_1.set_c0(vecb1.get_c0());
         x_1.set_c1(vecb1.get_c1());
@@ -139,18 +139,16 @@ void example_ckks_basics()
         PublicKey vecb3 = keygen3.generate_pk_with_veca(false);
         x_3.set_c0(vecb3.get_c0());
         x_3.set_c1(vecb3.get_c1());
-
+        //加和x_a，x_1，x_2，x_3
         evaluator.add_inplace(x_a, x_1);
         evaluator.add_inplace(x_a, x_2);
         evaluator.add_inplace(x_a, x_3);
-
+        //替换公钥中的c0和c1
         public_key.set_c0(x_a.get_c0());
         public_key.set_c1(x_a.get_c1());
-
         encryptor.set_public_key(public_key);
     }
-
-
+    
 
     RelinKeys relin_keys;
     keygen.create_relin_keys(relin_keys);
@@ -172,7 +170,7 @@ void example_ckks_basics()
     cout << "Input vector: " << endl;
     print_vector(input, 3, 7);
 
-    cout << "Evaluating polynomial PI*x^3 + 0.4x + 1 ..." << endl;
+    // cout << "Evaluating polynomial PI*x^3 + 0.4x + 1 ..." << endl;
 
     /*
     We create plaintexts for PI, 0.4, and 1 using an overload of CKKSEncoder::encode
@@ -184,11 +182,56 @@ void example_ckks_basics()
     encoder.encode(1.0, scale, plain_coeff0);
 
     Plaintext x_plain;
-    print_line(__LINE__);
-    cout << "Encode input vectors." << endl;
+    //print_line(__LINE__);
+    //cout << "Encode input vectors." << endl;
     encoder.encode(input, scale, x_plain);
     Ciphertext x1_encrypted;
     encryptor.encrypt(x_plain, x1_encrypted);
+
+    {
+        Plaintext plain_result;
+        decryptor.decrypt(x1_encrypted, plain_result);
+        vector<double> result1;
+        vector<double> result2;
+        vector<double> result3;
+        encoder.decode(plain_result, result1);
+        cout << "result1:" << endl;
+        print_vector(result1, 3, 7);
+
+        cout << "result2:" << endl;
+        {
+            Plaintext plain_result;
+            /*
+            Decrypt, decode, and print the result.
+            */
+            decryptor2.decrypt(x1_encrypted, plain_result);
+
+            encoder.decode(plain_result, result2);
+            print_vector(result2, 3, 7);
+        }
+
+        cout << "result3:" << endl;
+        {
+            Plaintext plain_result;
+            /*
+            Decrypt, decode, and print the result.
+            */
+            decryptor3.decrypt(x1_encrypted, plain_result);
+
+            encoder.decode(plain_result, result3);
+            print_vector(result3, 3, 7);
+        }
+
+        vector<double> sum_result;
+        for (int i = 0; i < result1.size(); ++i)
+        {
+            sum_result.push_back(result1[i] + result2[i] + result3[i]);
+        }
+        cout << "sum result:" << endl;
+        print_vector(sum_result, 3, 7);
+    }
+
+    return;
 
     /*
     To compute x^3 we first compute x^2 and relinearize. However, the scale has
