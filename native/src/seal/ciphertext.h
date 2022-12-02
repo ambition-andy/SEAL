@@ -378,6 +378,52 @@ namespace seal
             return poly_uint64_count;
         }
 
+        SEAL_NODISCARD inline std::vector<std::uint64_t> get_c1()
+        {
+            std::vector<std::uint64_t> vec;
+            auto len = get_veclen();
+            uint64_t *c1 = data(1);
+            for (std::size_t i = 0; i < len; ++i)
+            {
+                vec.push_back(c1[i]);
+            }
+
+            return vec;
+        }
+
+        SEAL_NODISCARD inline void set_c1(std::vector<std::uint64_t> vec)
+        {
+            auto len = get_veclen();
+            uint64_t *c1 = data(1);
+            for (std::size_t i = 0; i < len && i < vec.size(); ++i)
+            {
+                *(c1 + i) = vec[i];
+            }
+        }
+
+        SEAL_NODISCARD inline std::vector<std::uint64_t> get_c0()
+        {
+            std::vector<std::uint64_t> vec;
+            auto len = get_veclen();
+            uint64_t *c0 = data();
+            for (std::size_t i = 0; i < len; ++i)
+            {
+                vec.push_back(c0[i]);
+            }
+
+            return vec;
+        }
+
+        SEAL_NODISCARD inline void set_c0(std::vector<std::uint64_t> vec)
+        {
+            auto len = get_veclen();
+            uint64_t *c0 = data();
+            for (std::size_t i = 0; i < len && i < vec.size(); ++i)
+            {
+                *(c0 + i) = vec[i];
+            }
+        }
+
         /**
         Returns a reference to a polynomial coefficient at a particular
         index in the ciphertext data. If the polynomial modulus has degree N,

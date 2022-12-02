@@ -141,6 +141,7 @@ namespace seal
 
         //PublicKey public_key;
         sample_veca(secret_key_, context_, context_data.parms_id(), true, save_seed, public_key_veca_.data());
+        public_key_veca_.parms_id() = context_data.parms_id();
         return public_key_veca_;
     }
 

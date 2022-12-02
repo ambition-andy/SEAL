@@ -253,35 +253,24 @@ namespace seal
         */
         struct PublicKeyPrivateHelper;
 
-        SEAL_NODISCARD inline std::vector<std::uint64_t> get_veca()
+        SEAL_NODISCARD inline std::vector<std::uint64_t> get_c1()
         {
-            std::vector<std::uint64_t> vec;
-            auto len = pk_.get_veclen();
-            uint64_t *c1 = pk_.data(1);
-            for (std::size_t i = 0; i < len; ++i)
-            {
-                vec.push_back(c1[i]);
-            }
-
-            return vec;
+            return pk_.get_c1();
         }
 
-        SEAL_NODISCARD inline std::vector<std::uint64_t> get_vecb()
+        SEAL_NODISCARD inline void set_c1(std::vector<std::uint64_t> vec)
         {
-            std::vector<std::uint64_t> vec;
-            auto len = pk_.get_veclen();
-            uint64_t *c0 = pk_.data();
-            for (std::size_t i = 0; i < len; ++i)
-            {
-                vec.push_back(c0[i]);
-            }
-
-            return vec;
+            pk_.set_c1(vec);
         }
 
-        SEAL_NODISCARD inline void set_cipher(Ciphertext pk)
+        SEAL_NODISCARD inline std::vector<std::uint64_t> get_c0()
         {
-            pk_ = pk;
+            return pk_.get_c0();
+        }
+
+        SEAL_NODISCARD inline void set_c0(std::vector<std::uint64_t> vec)
+        {
+            pk_.set_c0(vec);
         }
 
     private:

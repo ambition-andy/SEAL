@@ -88,17 +88,75 @@ void example_ckks_basics()
 
     KeyGenerator keygen(context);
     auto secret_key = keygen.secret_key();
+
+    KeyGenerator keygen2(context);
+    auto secret_key2 = keygen2.secret_key();
+    
+    KeyGenerator keygen3(context);
+    auto secret_key3 = keygen3.secret_key();
+
     PublicKey public_key;
     keygen.create_public_key(public_key);
+    
+    Encryptor encryptor(context, public_key);
+    Evaluator evaluator(context);
+
+    Decryptor decryptor(context, secret_key);
+    Decryptor decryptor2(context, secret_key2);
+    Decryptor decryptor3(context, secret_key3);
+    
+    CKKSEncoder encoder(context);
+    
+    {
+        Plaintext x_plaina, x_plain1, x_plain2, x_plain3;
+        encoder.encode(0, scale, x_plaina);
+        encoder.encode(0, scale, x_plain1);
+        encoder.encode(0, scale, x_plain2);
+        encoder.encode(0, scale, x_plain3);
+
+        Ciphertext x_a, x_1, x_2, x_3;
+        encryptor.encrypt(x_plaina, x_a);
+        encryptor.encrypt(x_plain1, x_1);
+        encryptor.encrypt(x_plain2, x_2);
+        encryptor.encrypt(x_plain3, x_3);
+
+        PublicKey veca = keygen.generate_veca(false);
+        x_a.set_c0(veca.get_c0());
+        x_a.set_c1(veca.get_c1());
+
+        PublicKey vecb1 = keygen.generate_pk_with_veca(false);
+        x_1.set_c0(vecb1.get_c0());
+        x_1.set_c1(vecb1.get_c1());
+
+        // user2
+        keygen2.set_veca(veca);
+        PublicKey vecb2 = keygen2.generate_pk_with_veca(false);
+        x_2.set_c0(vecb2.get_c0());
+        x_2.set_c1(vecb2.get_c1());
+
+        // user3
+        keygen3.set_veca(veca);
+        PublicKey vecb3 = keygen3.generate_pk_with_veca(false);
+        x_3.set_c0(vecb3.get_c0());
+        x_3.set_c1(vecb3.get_c1());
+
+        evaluator.add_inplace(x_a, x_1);
+        evaluator.add_inplace(x_a, x_2);
+        evaluator.add_inplace(x_a, x_3);
+
+        public_key.set_c0(x_a.get_c0());
+        public_key.set_c1(x_a.get_c1());
+
+        encryptor.set_public_key(public_key);
+    }
+
+
+
     RelinKeys relin_keys;
     keygen.create_relin_keys(relin_keys);
     GaloisKeys gal_keys;
     keygen.create_galois_keys(gal_keys);
-    Encryptor encryptor(context, public_key);
-    Evaluator evaluator(context);
-    Decryptor decryptor(context, secret_key);
-
-    CKKSEncoder encoder(context);
+    
     size_t slot_count = encoder.slot_count();
     cout << "Number of slots: " << slot_count << endl;
 
@@ -305,9 +363,44 @@ void example_ckks_basics()
     */
     decryptor.decrypt(encrypted_result, plain_result);
     vector<double> result;
+    vector<double> result2;
+    vector<double> result3;
     encoder.decode(plain_result, result);
-    cout << "    + Computed result ...... Correct." << endl;
+    //cout << "    + Computed result ...... Correct." << endl;
+    cout << "result1:" << endl;
     print_vector(result, 3, 7);
+
+    cout << "result2:" << endl;
+    {
+        Plaintext plain_result;
+        /*
+        Decrypt, decode, and print the result.
+        */
+        decryptor2.decrypt(encrypted_result, plain_result);
+        
+        encoder.decode(plain_result, result2);
+        print_vector(result2, 3, 7);
+    }
+
+    cout << "result3:" << endl;
+    {
+        Plaintext plain_result;
+        /*
+        Decrypt, decode, and print the result.
+        */
+        decryptor3.decrypt(encrypted_result, plain_result);
+        
+        encoder.decode(plain_result, result3);
+        print_vector(result3, 3, 7);
+    }
+
+    vector<double> sum_result;
+    for (int i = 0; i < result.size(); ++i)
+    {
+        sum_result.push_back(result[i] + result2[i] + result3[i]);
+    }
+    cout << "sum result:" << endl;
+    print_vector(sum_result, 3, 7);
 
     /*
     While we did not show any computations on complex numbers in these examples,
