@@ -86,8 +86,8 @@ void example_ckks_basics()
     print_parameters(context);
     cout << endl;
 
-    KeyGenerator keygen(context);
-    auto secret_key = keygen.secret_key();
+    KeyGenerator keygen1(context);
+    auto secret_key1 = keygen1.secret_key();
 
     KeyGenerator keygen2(context);
     auto secret_key2 = keygen2.secret_key();
@@ -95,13 +95,17 @@ void example_ckks_basics()
     KeyGenerator keygen3(context);
     auto secret_key3 = keygen3.secret_key();
 
+    SecretKey secret_key_sum;
+    keygen1.add_secret_key(secret_key2, secret_key_sum);
+    keygen1.add_secret_key(secret_key3, secret_key_sum);
+
     PublicKey public_key;
-    keygen.create_public_key(public_key);
+    keygen1.create_public_key(public_key);
     
     Encryptor encryptor(context, public_key);
     Evaluator evaluator(context);
 
-    Decryptor decryptor(context, secret_key);
+    Decryptor decryptor(context, secret_key1);
     Decryptor decryptor2(context, secret_key2);
     Decryptor decryptor3(context, secret_key3);
     
@@ -120,11 +124,11 @@ void example_ckks_basics()
         encryptor.encrypt(x_plain2, x_2);
         encryptor.encrypt(x_plain3, x_3);
         // user1 生成veca，直接将x_a中的c0和c1替换为veca中的c0和c1
-        PublicKey veca = keygen.generate_veca(false);
+        PublicKey veca = keygen1.generate_veca(false);
         x_a.set_c0(veca.get_c0());
         x_a.set_c1(veca.get_c1());
         // user1 生成vecb1，直接将x_1中的c0和c1替换为veca中的c0和c1
-        PublicKey vecb1 = keygen.generate_pk_with_veca(false);
+        PublicKey vecb1 = keygen1.generate_pk_with_veca(false);
         x_1.set_c0(vecb1.get_c0());
         x_1.set_c1(vecb1.get_c1());
 
@@ -151,9 +155,9 @@ void example_ckks_basics()
     Encryptor encryptor2(context, public_key);
 
     RelinKeys relin_keys;
-    keygen.create_relin_keys(relin_keys);
+    keygen1.create_relin_keys(relin_keys);
     GaloisKeys gal_keys;
-    keygen.create_galois_keys(gal_keys);
+    keygen1.create_galois_keys(gal_keys);
     
     size_t slot_count = encoder.slot_count();
     cout << "Number of slots: " << slot_count << endl;
