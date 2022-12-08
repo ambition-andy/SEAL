@@ -105,9 +105,10 @@ void example_ckks_basics()
     Encryptor encryptor(context, public_key);
     Evaluator evaluator(context);
 
-    Decryptor decryptor(context, secret_key1);
+    Decryptor decryptor1(context, secret_key1);
     Decryptor decryptor2(context, secret_key2);
     Decryptor decryptor3(context, secret_key3);
+    Decryptor decryptor_sum(context, secret_key_sum);
     
     CKKSEncoder encoder(context);
     
@@ -152,7 +153,7 @@ void example_ckks_basics()
         public_key.set_c1(x_a.get_c1());
         encryptor.set_public_key(public_key);
     }
-    Encryptor encryptor2(context, public_key);
+    Encryptor encryptor_sum(context, public_key);
 
     RelinKeys relin_keys;
     keygen1.create_relin_keys(relin_keys);
@@ -190,11 +191,11 @@ void example_ckks_basics()
     //cout << "Encode input vectors." << endl;
     encoder.encode(input, scale, x_plain);
     Ciphertext x1_encrypted;
-    encryptor2.encrypt(x_plain, x1_encrypted);
+    encryptor_sum.encrypt(x_plain, x1_encrypted);
 
     {
         Plaintext plain_result1;
-        decryptor.decrypt(x1_encrypted, plain_result1);
+        decryptor1.decrypt(x1_encrypted, plain_result1);
 
         Plaintext plain_result2;
         decryptor2.decrypt(x1_encrypted, plain_result2);
@@ -202,11 +203,14 @@ void example_ckks_basics()
         Plaintext plain_result3;
         decryptor3.decrypt(x1_encrypted, plain_result3);
 
+        Plaintext plain_sum;
+        decryptor_sum.decrypt(x1_encrypted, plain_sum);
+
         plain_result1.add(plain_result2);
         plain_result1.add(plain_result3);
        
         vector<double> sum_result;
-        encoder.decode(plain_result1, sum_result); 
+        encoder.decode(plain_sum, sum_result); 
 
         cout << "sum result:" << endl;
         print_vector(sum_result, 3, 7);
@@ -385,7 +389,7 @@ void example_ckks_basics()
     /*
     Decrypt, decode, and print the result.
     */
-    decryptor.decrypt(encrypted_result, plain_result);
+    decryptor1.decrypt(encrypted_result, plain_result);
     vector<double> result;
     vector<double> result2;
     vector<double> result3;

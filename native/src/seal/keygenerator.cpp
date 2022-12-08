@@ -292,14 +292,20 @@ namespace seal
         auto &coeff_modulus = parms.coeff_modulus();
         size_t coeff_count = parms.poly_modulus_degree();
         size_t coeff_modulus_size = coeff_modulus.size();
-
-        des.data().resize(mul_safe(coeff_count, coeff_modulus_size));
+        static bool first = true;
+        if (first)
+        {
+            first = false;
+            des.data().resize(mul_safe(coeff_count, coeff_modulus_size));
+        }
         for (size_t i = 0; i < coeff_modulus_size; i++)
         {
             add_poly_coeffmod(
                  secret_key_.data().data() + i * coeff_count, sk.data().data() + i * coeff_count, coeff_count,
                  coeff_modulus[i], des.data().data() + i * coeff_count);
         }
+
+        des.parms_id() = context_data.parms_id();
     }
 
     void KeyGenerator::compute_secret_key_array(const SEALContext::ContextData &context_data, size_t max_power)
