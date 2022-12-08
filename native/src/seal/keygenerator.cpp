@@ -298,14 +298,34 @@ namespace seal
             first = false;
             des.data().resize(mul_safe(coeff_count, coeff_modulus_size));
         }
+        //RNSIter secret_key(des.data().data(), coeff_count);
         for (size_t i = 0; i < coeff_modulus_size; i++)
         {
             add_poly_coeffmod(
-                 secret_key_.data().data() + i * coeff_count, sk.data().data() + i * coeff_count, coeff_count,
+                des.data().data() + i * coeff_count, sk.data().data() + i * coeff_count, coeff_count,
                  coeff_modulus[i], des.data().data() + i * coeff_count);
         }
+        //// Transform the secret s into NTT representation.
+        //auto ntt_tables = context_data.small_ntt_tables();
+        //ntt_negacyclic_harvey(secret_key, coeff_modulus_size, ntt_tables);
 
         des.parms_id() = context_data.parms_id();
+    }
+
+    void KeyGenerator::add_public_key(PublicKey &pk)
+    {
+        auto &context_data = *context_.key_context_data();
+        auto &parms = context_data.parms();
+        auto &coeff_modulus = parms.coeff_modulus();
+        size_t coeff_count = parms.poly_modulus_degree();
+        size_t coeff_modulus_size = coeff_modulus.size();
+
+        for (size_t i = 0; i < coeff_modulus_size; i++)
+        {
+            add_poly_coeffmod(
+                public_key_veca_.data().data() + i * coeff_count, pk.data().data() + i * coeff_count, coeff_count,
+                coeff_modulus[i], public_key_veca_.data().data() + i * coeff_count);
+        }
     }
 
     void KeyGenerator::compute_secret_key_array(const SEALContext::ContextData &context_data, size_t max_power)

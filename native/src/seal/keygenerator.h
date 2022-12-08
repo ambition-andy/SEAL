@@ -60,6 +60,8 @@ namespace seal
 
         SEAL_NODISCARD void add_secret_key(SecretKey &sk, SecretKey &des);
 
+        SEAL_NODISCARD void add_public_key(PublicKey &pk);
+
         /**
         Generates a public key and stores the result in destination. Every time
         this function is called, a new public key will be generated.

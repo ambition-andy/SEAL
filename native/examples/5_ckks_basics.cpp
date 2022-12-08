@@ -96,6 +96,7 @@ void example_ckks_basics()
     auto secret_key3 = keygen3.secret_key();
 
     SecretKey secret_key_sum;
+    keygen1.add_secret_key(secret_key1, secret_key_sum);
     keygen1.add_secret_key(secret_key2, secret_key_sum);
     keygen1.add_secret_key(secret_key3, secret_key_sum);
 
@@ -111,7 +112,8 @@ void example_ckks_basics()
     Decryptor decryptor_sum(context, secret_key_sum);
     
     CKKSEncoder encoder(context);
-    
+    /*
+    //方案一   
     {
         Plaintext x_plaina, x_plain1, x_plain2, x_plain3;
         encoder.encode(0, scale, x_plaina);
@@ -151,9 +153,31 @@ void example_ckks_basics()
         //替换公钥中的c0和c1
         public_key.set_c0(x_a.get_c0());
         public_key.set_c1(x_a.get_c1());
-        encryptor.set_public_key(public_key);
+        //encryptor.set_public_key(public_key);
     }
+
     Encryptor encryptor_sum(context, public_key);
+    */
+    
+    //方案二 Start
+    PublicKey veca = keygen1.generate_veca(false);
+    {
+        PublicKey vecb1 = keygen1.generate_pk_with_veca(false);
+
+        keygen2.set_veca(veca);
+        PublicKey vecb2 = keygen2.generate_pk_with_veca(false);
+
+        keygen3.set_veca(veca);
+        PublicKey vecb3 = keygen3.generate_pk_with_veca(false);
+
+        keygen1.add_public_key(vecb1);
+        keygen1.add_public_key(vecb2);
+        keygen1.add_public_key(vecb3);
+
+
+    }
+    Encryptor encryptor_sum(context, veca);
+    //方案二 End
 
     RelinKeys relin_keys;
     keygen1.create_relin_keys(relin_keys);
@@ -194,20 +218,20 @@ void example_ckks_basics()
     encryptor_sum.encrypt(x_plain, x1_encrypted);
 
     {
-        Plaintext plain_result1;
-        decryptor1.decrypt(x1_encrypted, plain_result1);
+        //Plaintext plain_result1;
+        //decryptor1.decrypt(x1_encrypted, plain_result1);
 
-        Plaintext plain_result2;
-        decryptor2.decrypt(x1_encrypted, plain_result2);
+        //Plaintext plain_result2;
+        //decryptor2.decrypt(x1_encrypted, plain_result2);
 
-        Plaintext plain_result3;
-        decryptor3.decrypt(x1_encrypted, plain_result3);
+        //Plaintext plain_result3;
+        //decryptor3.decrypt(x1_encrypted, plain_result3);
 
         Plaintext plain_sum;
         decryptor_sum.decrypt(x1_encrypted, plain_sum);
 
-        plain_result1.add(plain_result2);
-        plain_result1.add(plain_result3);
+        //plain_result1.add(plain_result2);
+        //plain_result1.add(plain_result3);
        
         vector<double> sum_result;
         encoder.decode(plain_sum, sum_result); 
