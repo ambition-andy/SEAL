@@ -58,7 +58,12 @@ namespace seal
         */
         SEAL_NODISCARD const SecretKey &secret_key() const;
 
-        SEAL_NODISCARD void add_secret_key(SecretKey &sk, SecretKey &des);
+        SEAL_NODISCARD void add_secret_key(SecretKey &sk, SecretKey &des, bool flag = false);
+
+        SEAL_NODISCARD void set_secret_key(SecretKey& sk)
+        {
+            secret_key_ = sk;
+        }
 
         SEAL_NODISCARD void add_public_key(PublicKey &pk);
 

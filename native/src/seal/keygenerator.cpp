@@ -285,31 +285,58 @@ namespace seal
         return secret_key_;
     }
 
-    void KeyGenerator::add_secret_key(SecretKey &sk, SecretKey &des)
+    //void KeyGenerator::add_secret_key(SecretKey &sk, SecretKey &des/*des‘›≤ª π”√*/)
+    //{
+    //    auto &context_data = *context_.key_context_data();
+    //    auto &parms = context_data.parms();
+    //    auto &coeff_modulus = parms.coeff_modulus();
+    //    size_t coeff_count = parms.poly_modulus_degree();
+    //    size_t coeff_modulus_size = coeff_modulus.size();
+    //    /*static bool first = true;
+    //    if (first)
+    //    {
+    //        first = false;
+    //        des.data().resize(mul_safe(coeff_count, coeff_modulus_size));
+    //    }*/
+    //    //RNSIter secret_key(secret_key_.data().data(), coeff_count);
+    //    for (size_t i = 0; i < coeff_modulus_size; i++)
+    //    {
+    //        add_poly_coeffmod(
+    //            secret_key_.data().data() + i * coeff_count, sk.data().data() + i * coeff_count, coeff_count,
+    //            coeff_modulus[i], secret_key_.data().data() + i * coeff_count);
+    //    }
+    //    ////// Transform the secret s into NTT representation.
+    //    //auto ntt_tables = context_data.small_ntt_tables();
+    //    //ntt_negacyclic_harvey(secret_key, coeff_modulus_size, ntt_tables);
+
+    //    //// Set the secret_key_array to have size 1 (first power of secret)
+    //    //secret_key_array_ = allocate_poly(coeff_count, coeff_modulus_size, pool_);
+    //    //set_poly(secret_key_.data().data(), coeff_count, coeff_modulus_size, secret_key_array_.get());
+    //    //secret_key_array_size_ = 1;
+
+    //    secret_key_.parms_id() = context_data.parms_id();
+    //}
+
+    void KeyGenerator::add_secret_key(SecretKey &sk, SecretKey &des, bool flag/* = false*/)
     {
         auto &context_data = *context_.key_context_data();
         auto &parms = context_data.parms();
         auto &coeff_modulus = parms.coeff_modulus();
         size_t coeff_count = parms.poly_modulus_degree();
         size_t coeff_modulus_size = coeff_modulus.size();
-        static bool first = true;
-        if (first)
+
+        if (flag)
         {
-            first = false;
             des.data().resize(mul_safe(coeff_count, coeff_modulus_size));
+            des.parms_id() = context_data.parms_id();
         }
-        //RNSIter secret_key(des.data().data(), coeff_count);
+
         for (size_t i = 0; i < coeff_modulus_size; i++)
         {
             add_poly_coeffmod(
-                des.data().data() + i * coeff_count, sk.data().data() + i * coeff_count, coeff_count,
-                 coeff_modulus[i], des.data().data() + i * coeff_count);
+                des.data().data() + i * coeff_count, sk.data().data() + i * coeff_count, coeff_count, coeff_modulus[i],
+                des.data().data() + i * coeff_count);
         }
-        //// Transform the secret s into NTT representation.
-        //auto ntt_tables = context_data.small_ntt_tables();
-        //ntt_negacyclic_harvey(secret_key, coeff_modulus_size, ntt_tables);
-
-        des.parms_id() = context_data.parms_id();
     }
 
     void KeyGenerator::add_public_key(PublicKey &pk)
